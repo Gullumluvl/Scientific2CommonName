@@ -1,0 +1,21 @@
+Convert species latin/scientific names to common names
+======================================================
+
+### USAGE:
+
+    ./Scientific2CommonName.py "Cuculus canorus" "Podiceps cristatus"
+
+or to convert from common names to scientific:
+
+    ./Scientific2CommonName.py -c "turkey vulture"
+
+Reading from standard input is allowed:
+
+    echo -e "Melitaea cinxia\nSepia officinalis" | ./Scientific2CommonName.py
+
+### OUTPUT
+
+one name per line to stdout. Not found name (either no common name in the database, or
+species was not found at all) shows as "NA".
+
+
