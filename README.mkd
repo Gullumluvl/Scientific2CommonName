@@ -19,3 +19,12 @@ one name per line to stdout. Not found name (either no common name in the databa
 species was not found at all) shows as "NA".
 
 
+Fetch taxon name
+================
+
+Same usage. See `FindClade -h`
+
+----------------------------------------------
+
+Please use/share/modify this code as you want.
+
