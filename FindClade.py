@@ -10,17 +10,18 @@ import argparse
 import fileinput
 
 # Seem to be forbidden when not http secure.
-url = "https://www.ncbi.nlm.nih.gov/taxonomy/"
-report = "info"
+URL = "https://www.ncbi.nlm.nih.gov/taxonomy/"
+REPORT = "info"
 
 
-def main(names, level='family'):
+def main(names, level='family', http=False):
     # Check if names are given as arguments of the script. If not, read stdin.
     # TODO: error when no data provided to stdin after some time lapse.
+    url = URL.replace('https', 'http') if http else URL
     if not names: names = [line.rstrip() for line in fileinput.input(('-',))]
     for name in names:
         data = {"term": "%s" % name,
-                "report": report}
+                "report": REPORT}
         #print data
         r = requests.post(url, data=data)
         if not r.ok:
@@ -45,6 +46,8 @@ if __name__ == '__main__':
     parser.add_argument("-l", "--level", default="family",
                         help="taxonomic level to fetch [%(default)s]")
     parser.add_argument("names", nargs='*', help="species names to convert, if empty, read from stdin")
+    parser.add_argument("--http", action='store_true',
+                        help="Use http:// instead of https://")
     args = parser.parse_args()
     main(**vars(args))
 
