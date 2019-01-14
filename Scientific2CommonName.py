@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 
 """ Converts common species names to scientific, and conversely.
 Can take one name per line from stdin"""
@@ -32,12 +32,16 @@ def main(names, inputtype=None, searchedfield='Scientific Name', rank=None):
             rank_out = rslt.findNext('dt', text='Rank:').parent.dd.text
             found = rslt.findAll('dt', text=(searchedfield+':'))
             if not found:
-                raise RuntimeError("Invalid searched field: %r" % searchedfield)
+                #raise KeyError("Invalid searched field: %r" % searchedfield)
+                found = [None]
 
             assert len(found) == 1
             found, = found
 
-            rslt_out = ';'.join(dd.text for dd in found.parent.findAll('dd'))
+            if found is None:
+                rslt_out = 'None'
+            else:
+                rslt_out = ';'.join(dd.text for dd in found.parent.findAll('dd'))
 
             if not rank or rank_out == rank:
                 out.append(rslt_out)
@@ -58,11 +62,15 @@ if __name__ == '__main__':
                         dest="searchedfield", const="Taxonomy ID",
                         default="Scientific Name",
                         help="Search for the taxonomy id") # (default: scientific)")
+    parser.add_argument("-s", "--synonym", action='store_const', 
+                        dest="searchedfield", const="synonym",
+                        default="Scientific Name",
+                        help="Search for the synonymous scientific names") # (default: scientific)")
     parser.add_argument("-l", "--lineage", action='store_const', 
                         dest="searchedfield", const="Lineage",
                         default="Scientific Name",
                         help="Search for the lineage") # (default: scientific)")
-    parser.add_argument("-i", "--inputtype", choices=["Scientific Name", "Common Name", "genbank common name"],
+    parser.add_argument("-i", "--inputtype", choices=["Scientific Name", "Common Name", "genbank common name", "Synonym", "Taxonomy ID"],
                         help="Specify the input type.")
     parser.add_argument("-r", "--rank", help="Limit output to the matching ranks (species, genus, class, etc)")
     parser.add_argument("names", nargs='*', help="species names to convert, if empty, read from stdin")
