@@ -1,15 +1,20 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
+
+
+from __future__ import print_function
+
 
 """ Converts common species names to scientific, and conversely.
 Can take one name per line from stdin"""
+
 
 import requests
 import bs4
 import argparse
 import fileinput
 
+
 URL = "https://www.ncbi.nlm.nih.gov/taxonomy/"
-#url = "http://www.ncbi.nlm.nih.gov/taxonomy/"
 REPORT = "info"
 
 
@@ -21,12 +26,10 @@ def main(names, inputtype=None, searchedfield='Scientific Name', rank=None):
     for name in names:
         data = {"term": "%s[%s]" % (name, inputtype) if inputtype else name,
                 "report": REPORT} 
-        #print data
         r = requests.post(URL, data=data)
         if r.status_code != requests.codes.ok:
             raise r.raise_for_status()
         soup = bs4.BeautifulSoup(r.text, 'lxml')
-        #print soup.dl
         out = []
         for rslt in soup.findAll('div', attrs={'class': 'rslt'}): 
             rank_out = rslt.findNext('dt', text='Rank:').parent.dd.text
@@ -49,7 +52,7 @@ def main(names, inputtype=None, searchedfield='Scientific Name', rank=None):
         if not out:
             out = ['NA']
 
-        print '\t'.join(out)
+        print('\t'.join(out))
 
 
 if __name__ == '__main__':
@@ -75,6 +78,4 @@ if __name__ == '__main__':
     parser.add_argument("-r", "--rank", help="Limit output to the matching ranks (species, genus, class, etc)")
     parser.add_argument("names", nargs='*', help="species names to convert, if empty, read from stdin")
     args = parser.parse_args()
-    #print args
     main(**vars(args))
-
